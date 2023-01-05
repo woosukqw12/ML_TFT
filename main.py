@@ -4,8 +4,10 @@ import argparse
 import pickle
 import torch
 from torchvision import datasets, transforms
+from torch.utils.data import DataLoader
 
 from model_nn import SoftDecisionTree
+from dataloader import CustomDataset
 
 # Training settings
 parser = argparse.ArgumentParser(description="PyTorch MNIST Example")
@@ -88,32 +90,36 @@ except:
     print("directory ./data already exists")
 
 kwargs = {"num_workers": 1, "pin_memory": True} if args.cuda else {}
+dataset = CustomDataset()
+train_ds, test_ds = torch.utils.data.random_split(dataset, [0.8, 0.2])
+train_dl = DataLoader(train_ds, batch_size=2, shuffle=True)
+test_dl = DataLoader(test_ds, batch_size=2, shuffle=True)
 
-train_loader = torch.utils.data.DataLoader(
-    datasets.MNIST(
-        "./data",
-        train=True,
-        download=True,
-        transform=transforms.Compose(
-            [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
-        ),
-    ),
-    batch_size=args.batch_size,
-    shuffle=True,
-    **kwargs
-)
-test_loader = torch.utils.data.DataLoader(
-    datasets.MNIST(
-        "./data",
-        train=False,
-        transform=transforms.Compose(
-            [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
-        ),
-    ),
-    batch_size=args.batch_size,
-    shuffle=True,
-    **kwargs
-)
+# train_loader = DataLoader(
+#     datasets.MNIST(
+#         "./data",
+#         train=True,
+#         download=True,
+#         transform=transforms.Compose(
+#             [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
+#         ),
+#     ),
+#     batch_size=args.batch_size,
+#     shuffle=True,
+#     **kwargs
+# )
+# test_loader = DataLoader(
+#     datasets.MNIST(
+#         "./data",
+#         train=False,
+#         transform=transforms.Compose(
+#             [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
+#         ),
+#     ),
+#     batch_size=args.batch_size,
+#     shuffle=True,
+#     **kwargs
+# )
 
 
 def save_result(acc):
@@ -133,7 +139,7 @@ if args.cuda:
     model.cuda()
 
 for epoch in range(1, args.epochs + 1):
-    model.train_(train_loader, epoch)
-    model.test_(test_loader, epoch)
+    model.train_(train_dl, epoch)
+    model.test_(test_dl, epoch)
 
 save_result(model)

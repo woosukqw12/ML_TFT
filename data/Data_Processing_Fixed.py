@@ -6,7 +6,7 @@ import pickle
 f = open("check.csv", "r")
 
 # f = open("match_data/temp_ch_2022-11-10.csv", "r")
-
+# read data from pickle file
 df = pd.read_pickle("match_data/match_data22.pickle")
 
 MetaData_item = [
@@ -64,8 +64,9 @@ Combination_Item = [
     "TFT_Item_TearOfTheGoddess",
 ]
 
-# delete 404
+# delete 404 Not Found and pairs & turbo mode
 df = df[df["status.status_code"].isna()]
+df = df[df["info.tft_game_type"] == "standard"]
 print(len(df))
 
 for game in df["info.participants"]:

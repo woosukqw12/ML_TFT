@@ -8,6 +8,8 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
 
+# from dataloader import CustomDataset
+
 
 class InnerNode:
     def __init__(self, depth, args):
@@ -117,7 +119,6 @@ class SoftDecisionTree(nn.Module):
             self.target_onehot = self.target_onehot.cuda()
             self.path_prob_init = self.path_prob_init.cuda()
 
-    """
     def forward(self, x):
         node = self.root
         path_prob = Variable(torch.ones(self.args.batch_size, 1))
@@ -125,7 +126,6 @@ class SoftDecisionTree(nn.Module):
             node, prob = node.select_next(x)
             path_prob *= prob
         return node()
-    """
 
     def cal_loss(self, x, y):
         batch_size = y.size()[0]

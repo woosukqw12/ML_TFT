@@ -10,7 +10,7 @@ import pickle
 from datetime import date
 from requests.adapters import Retry, HTTPAdapter
 
-key = "RGAPI-ff3f9cd8-0265-442b-a841-003126f2791f"
+key = "RGAPI-ff3f9cd8-0265-442b-a841-003126f2791f" # 24시간마다 만료되므로, 재 갱신한 key를 받는 작업이 필요합니다. 
 today = date.today().isoformat()
 
 
@@ -21,7 +21,7 @@ def league_summoner(key, tier, country="kr"):
     return json.loads(request.content)
 
 
-def summoner_info(summonerId, key, country="kr"):  # by_name
+def summoner_info(summonerId, key, n, country="kr"):  # by_name
     try:
         request = requests.get(
             f"https://{country}.api.riotgames.com/tft/summoner/v1/summoners/{summonerId}?api_key={key}",
@@ -32,7 +32,7 @@ def summoner_info(summonerId, key, country="kr"):  # by_name
             try:
                 print(f"Timeout. {i+1}-th Retry...")
                 request = requests.get(
-                    f"https://{region}.api.riotgames.com/tft/match/v1/matches/by-puuid/{i}/ids?count={n}&api_key={key}",
+                    f"https://{country}.api.riotgames.com/tft/match/v1/matches/by-puuid/{i}/ids?count={n}&api_key={key}",
                     timeout=5,
                 )
                 break
@@ -52,7 +52,7 @@ def summoner_info(summonerId, key, country="kr"):  # by_name
                 try:
                     print(f"Timeout. {i+1}-th Retry...")
                     request = requests.get(
-                        f"https://{region}.api.riotgames.com/tft/match/v1/matches/by-puuid/{i}/ids?count={n}&api_key={key}",
+                        f"https://{country}.api.riotgames.com/tft/match/v1/matches/by-puuid/{i}/ids?count={n}&api_key={key}",
                         timeout=5,
                     )
                     break
@@ -214,7 +214,7 @@ for i in range(0, 15):
 
 for i in range(22, 31):
     with open(
-        f"C:/Users/edwar/TFTML/data/merged_match_id/match_id{i}.pickle", "rb"
+        f"data/merged_match_id/match_id{i}.pickle", "rb"
     ) as f:
         matchid = pickle.load(f)
     match_data = match_info(matchid, key, "asia")
